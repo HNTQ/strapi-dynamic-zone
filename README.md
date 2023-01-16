@@ -59,9 +59,9 @@ This repository contains an example with the following configuration:
 ### `Generate new components`
 
 The first step is to create a new component with a dynamic zone field.
-Then generate a new empty component called Columns in Grid section, a Title component in Text section and an Image component in Media section.
+Generate a new empty component called Columns in Grid section, a Title component in Text section and an Image component in Media section.
 
-### `Add Dynamic zone in Grid component.`
+### `Add Dynamic zone in Columns component.`
 
 in `components/columns/grid/columns.json` file, replace the content by:
 
