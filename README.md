@@ -4,6 +4,10 @@ First, this modification only work for Strapi V4.2 and to be adpated for other v
 
 This is not validated by Strapi team, so use it at your own risk.
 
+This a is a partial solution to handle dynamic zone in components. but there is a lot of work to do to make it work in all cases and properly.
+
+Do not hesitate to contribute to this repository and try to develop a functionnal "pluggin" (improvement) for strapi.
+
 ## `installation`
 
 ```
