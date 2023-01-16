@@ -55,7 +55,7 @@ This repository contains an example with the following configuration:
 ### `Generate new components`
 
 The first step is to create a new component with a dynamic zone field.
-so generate a new empty component in called Columns in Grid section a Title component in Text section, and an Image component in Media section.
+Then generate a new empty component called Columns in Grid section, a Title component in Text section and an Image component in Media section.
 
 ### `Add Dynamic zone in Grid component.`
 
@@ -82,21 +82,21 @@ in `components/columns/grid/columns.json` file, replace the content by:
 }
 ```
 
-Refresh your admin panel and you should see a Grid component containing a left and right dynamic zone with title and image.
+Refresh your admin panel and you should see a Grid component containing a left and right dynamic zone with title and image components available.
 
 ## `Collection`
 
 ### `Generate new collection named Page`
 
-Generate a new Page collection with a Title, a description and a content dynamic zone.
+Generate a new collection named Page with a Title, a description and a dynamic zone (content).
 
-In dynamic zone you can add a columns component and others components.
+Add column component in dynamic zone (and other components).
 
 ### `Generate an example page containing dynamic zone in content`
 
 - Add a new page.
 - Fill the title and description fields.
-- In the content dynamic zone, add a columns component with a title at right and an image at left.
+- In the dynamic zone, add a columns component with a title at right and an image at left dynamic zone.
 
 Add find and findOne permission and check the result in the api:
 
