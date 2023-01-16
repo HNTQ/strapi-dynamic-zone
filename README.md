@@ -1,28 +1,32 @@
-# 🚀 Getting started with Strapi
+# 🚀 Modification to handle dynamic zone in components
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html) (CLI) which lets you scaffold and manage your project in seconds.
+First, this modification only work for Strapi V4.2 and to be adpated for other version.
 
-### `develop`
+This is not validated by Strapi team, so use it at your own risk.
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-develop)
+## `installation`
 
 ```
-npm run develop
+npm install
 # or
-yarn develop
+yarn
 ```
 
-### `start`
-
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-start)
+## `Initialize Strapi with custom modifications`
 
 ```
-npm run start
+npm run strapi-init
 # or
-yarn start
+yarn strapi-init
 ```
 
-### `build`
+If this script failed, you can manually copy @strapi folder in node_modules to replace modified files.
+
+Do not replace the whole folder, only the modified files.
+
+After each strapi-init it will necessary to build the admin panel.
+
+## `build`
 
 Build your admin panel. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-build)
 
@@ -32,26 +36,154 @@ npm run build
 yarn build
 ```
 
-## ⚙️ Deployment
+## `start`
 
-Strapi gives you many possible deployment options for your project. Find the one that suits you on the [deployment section of the documentation](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment.html).
+Start your application. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-start)
 
-## 📚 Learn more
+```
+npm run develop
+# or
+yarn develop
+```
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://docs.strapi.io) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+# `Example: `
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+This repository contains an example with the following configuration:
 
-## ✨ Community
+## `Component`
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+### `Generate new components`
 
----
+The first step is to create a new component with a dynamic zone field.
+so generate a new empty component in called Columns in Grid section a Title component in Text section, and an Image component in Media section.
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+### `Add Dynamic zone in Grid component.`
+
+in `components/columns/grid/columns.json` file, replace the content by:
+
+```json
+{
+  "collectionName": "components_grid_columns",
+  "info": {
+    "displayName": "Columns",
+    "icon": "table"
+  },
+  "options": {},
+  "attributes": {
+    "left": {
+      "type": "dynamiczone",
+      "components": ["text.title", "media.image"]
+    },
+    "right": {
+      "type": "dynamiczone",
+      "components": ["text.title", "media.image"]
+    }
+  }
+}
+```
+
+Refresh your admin panel and you should see a Grid component containing a left and right dynamic zone with title and image.
+
+## `Collection`
+
+### `Generate new collection named Page`
+
+Generate a new Page collection with a Title, a description and a content dynamic zone.
+
+In dynamic zone you can add a columns component and others components.
+
+### `Generate an example page containing dynamic zone in content`
+
+- Add a new page.
+- Fill the title and description fields.
+- In the content dynamic zone, add a columns component with a title at right and an image at left.
+
+Add find and findOne permission and check the result in the api:
+
+http://localhost:1337/api/pages/?populate=\*
+
+Dynamic zone are not populated.
+
+## `Update Page controllers for deep populate`
+
+In `api/page/controllers/page.js` file, replace the content by this:
+
+```js
+"use strict";
+
+/**
+ * page controller
+ */
+
+const { createCoreController } = require("@strapi/strapi").factories;
+
+const uid = "api::page.page";
+
+const components = {
+  content: {
+    populate: {
+      image: {
+        populate: "*",
+      },
+      left: {
+        populate: "*",
+      },
+      right: {
+        populate: "*",
+      },
+      src: {
+        populate: "*",
+      },
+      type: true,
+    },
+  },
+};
+
+module.exports = createCoreController(uid, () => {
+  return {
+    async find(ctx) {
+      // overwrite default populate=* functionality
+      if (ctx.query.populate === "*") {
+        const entity = await strapi.entityService.findMany(uid, {
+          ...ctx.query,
+          populate: components,
+        });
+        const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
+        return this.transformResponse(sanitizedEntity);
+      }
+      // maintain default functionality for all other request
+      return super.find(ctx);
+    },
+    async findOne(ctx) {
+      const { id } = ctx.request.params;
+
+      if (ctx.query.populate === "*") {
+        const entity = await strapi.entityService.findOne(uid, id, {
+          ...ctx.query,
+          populate: components,
+        });
+        const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
+        return this.transformResponse(sanitizedEntity);
+      }
+
+      return super.findOne(ctx);
+    },
+  };
+});
+```
+
+You can now get a populated page with dynamic zone containg images populated too.
+
+# `Thanks`
+
+Thanks to [@JoshaVayer](https://github.com/joshuaVayer) for his big help and his work on this feature
+
+Original modification on this repository: [WestSolution/Strapi](https://github.com/West-Solutions/strapi/tree/feature/handle-dynamic-zone-in-components)
+Check the pull request to know which files are modified and how: [WestSolution/Strapi#1](https://github.com/West-Solutions/strapi/pull/1)
+
+Content-type-builder modification are not included in this repository because not yet functional.
+
+## `TODO`
+
+- [ ] Create an official pluggin for strapi for the last version.
+- [ ] Allow creation of component with dynamic zone in content-type-builder using strapi admin panel

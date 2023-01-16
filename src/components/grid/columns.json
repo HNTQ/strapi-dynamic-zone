@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_grid_columns",
+  "info": {
+    "displayName": "Columns",
+    "icon": "table"
+  },
+  "options": {},
+  "attributes": {
+    "left": {
+      "type": "dynamiczone",
+      "components": ["text.title", "media.image"]
+    },
+    "right": {
+      "type": "dynamiczone",
+      "components": ["text.title", "media.image"]
+    }
+  }
+}
