@@ -7,7 +7,8 @@
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "strapi-init": "cp -R @strapi node_modules"
   },
   "devDependencies": {},
   "dependencies": {
